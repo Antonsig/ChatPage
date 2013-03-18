@@ -27,11 +27,11 @@ var inExtension = {
             message.ext = { 
                 rooms : currentRooms.room,
                 roomOwner : currentRooms.ownerId,
-                messageData : currentMessages.data,
+                messageData : currentMessages.data.text,
                 messageUserId : currentMessages.userId,
                 messageRoom : currentMessages.room
             };
-            
+
             //console.log("sendi1");
             return callback(message);             
         };
@@ -82,12 +82,16 @@ bayeux.bind('publish', function(clientId, channel, data) {
             found = true;
             console.log("Herbergi fannst");
         }
-    }        
+    }     
     if (found == false) {
         currentRooms.room.push(channel);
         currentRooms.ownerId.push(clientId);
         console.log("channel added to server");
     }
+    currentMessages.userId.push(clientId);
+    currentMessages.room.push(channel);
+    currentMessages.data.push(data.text);
+
 });
 
 bayeux.bind('disconnect', function(clientId) {

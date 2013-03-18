@@ -13,38 +13,47 @@ var messages = {
     room : []
 };
 
-window.setInterval(function syncServer() {
+setInterval(function(){syncServer()},5000);
+
+function syncServer() {
     var clientAuth = {
         incoming: function(message, callback) {
         // Again, leave non-subscribe messages alone
         if (message.channel !== '/meta/subscribe')
           return callback(message);
-        messages.data = message.ext.messageData;
-        messages.owner = message.ext.messageOwner;
-        messages.room = message.ext.messageRoom;
+        for(var i = 0; i < message.ext.rooms.length; i++) {
+            messages.data[i] = message.ext.messageData[i];
+            messages.owner[i] = message.ext.messageUserId[i];
+            messages.room[i] = message.ext.messageRoom[i];       
+        }
+
         rooms.name = message.ext.rooms;
         rooms.owner = message.ext.roomOwner;
-        
-        console.log("localrooms refreshed");
+        // console.log("MessageRoomLength " + message.ext.rooms.length);
+        // console.log("MessageRoomNameLength " + message.ext.rooms.length);
+        // console.log("localrooms refreshed");
         // Carry on and send the message to the server
         callback(message);
           }
         };
     client.addExtension(clientAuth);
-}, 5000);
+};
 
-function logVar(messages) {
+function logVar() {
     for (var i = 0; i < messages.room.length; i++) {
-        console.log("message " + i + " " + messages.data[i].text + " owner: " + messages.owner[i ] + " room: " + messages.room[i]);
+        //console.log("room: " + messages.room[i] + " " + i);
+        console.log("message " + i + " " + messages.data[i] + " owner: " + messages.owner[i ] + " room: " + messages.room[i]);
     }
 };
 
 $(function(){
     $('#send').click(function(e) {
+    syncServer();
+    logVar();    
     message = document.getElementById("myText").value;
-        var publication = client.publish(currentRoom, {userName: client.name, text: message});
-            //logVar();
-        $('#myText').val('');
+    var publication = client.publish(currentRoom, {userName: client.name, text: message});
+
+    $('#myText').val('');
     });
 
     subsc();
