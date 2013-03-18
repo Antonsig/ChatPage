@@ -60,6 +60,7 @@ function createUser() {
 
     client.name = document.getElementById("newUserName").value;
     console.log(client.name);
+    client.colornumber=Math.floor(Math.random()*999);
     $("#currentUser").html('Welcome ' + client.name);
 
 };
@@ -79,7 +80,7 @@ function subsc() {
     client.subscribe(currentRoom, function(message) {
         var str = '<div class="mess">';
             str += ' <span style="color: #';
-            str += color();
+            str += client.colornumber;
             str += '">';
             str += message.userName;
             str += " say's </span>";
@@ -87,9 +88,6 @@ function subsc() {
             str += '</div>';
         $("#output").val('');
         $("#output").prepend(str);
+        console.log(client.colornumber);
     });
-}
-
-function color(){
-    var randomnumber=Math.floor(Math.random()*999);
 }
