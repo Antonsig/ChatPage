@@ -4,7 +4,7 @@ var currentRooms = {
 };
 
 var currentMessages = {
-    userID : [],
+    userId : [],
     room : [],
     data : []
 };
@@ -25,8 +25,11 @@ var inExtension = {
                 message.ext = {};
             };
             message.ext = { 
-                rooms: currentRooms.room,
-                messages: currentMessages
+                rooms : currentRooms.room,
+                roomOwner : currentRooms.ownerId,
+                messageData : currentMessages.data,
+                messageUserId : currentMessages.userId,
+                messageRoom : currentMessages.room
             };
             
             //console.log("sendi1");
@@ -34,9 +37,11 @@ var inExtension = {
         };
         if (!message.ext) {
             message.ext = { 
-                value: "hola2",
-                rooms: currentRooms.room,
-                messages: currentMessages
+                rooms : currentRooms.room,
+                roomOwner : currentRooms.ownerId,
+                messageData : currentMessages.data,
+                messageUserId : currentMessages.userId,
+                messageRoom : currentMessages.room
             };
         //console.log("sendi2");    
         };

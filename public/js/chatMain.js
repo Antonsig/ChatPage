@@ -1,44 +1,54 @@
 var client = new Faye.Client('http://localhost:8001/faye');
 client.name = "anonymous";
 //var room = new Faye.Channel('http://localhost:8001/faye');
-var rooms = [];
 var currentRoom = "/chattid";
 var currentUser = 'anonymous';
-var message = "";
+var rooms = {
+    name : [],
+    owner : []
+};
+var messages = {
+    data : [],
+    owner : [],
+    room : []
+};
 
-
-// samskipti við server
-//////////////////////////////////////////////////
+window.setInterval(function syncServer() {
     var clientAuth = {
         incoming: function(message, callback) {
         // Again, leave non-subscribe messages alone
         if (message.channel !== '/meta/subscribe')
           return callback(message);
-        // Add ext field if it's not present
-        // if (!message.ext) {
-            // message.ext = {value : ""}
-        // };
+        messages.data = message.ext.messageData;
+        messages.owner = message.ext.messageOwner;
+        messages.room = message.ext.messageRoom;
+        rooms.name = message.ext.rooms;
+        rooms.owner = message.ext.roomOwner;
         
-        rooms = message.ext.rooms;
-        console.log("rooms uppfært");
+        console.log("localrooms refreshed");
         // Carry on and send the message to the server
         callback(message);
           }
         };
     client.addExtension(clientAuth);
+}, 5000);
 
-///////////////////////////////////////////////////  
-
-
+function logVar(messages) {
+    for (var i = 0; i < messages.room.length; i++) {
+        console.log("message " + i + " " + messages.data[i].text + " owner: " + messages.owner[i ] + " room: " + messages.room[i]);
+    }
+};
 
 $(function(){
     $('#send').click(function(e) {
     message = document.getElementById("myText").value;
         var publication = client.publish(currentRoom, {userName: client.name, text: message});
-
+            //logVar();
         $('#myText').val('');
     });
+
     subsc();
+
 });
 
 
@@ -68,7 +78,8 @@ function createUser() {
 function createChatroom() {
     currentRoom = "/" + document.getElementById("chatRoomName").value;
     console.log(currentRoom);
-    rooms.push(currentRoom);
+    rooms.name.push(currentRoom);
+    rooms.owner.push(client.ID);
     for(var i = 0; i < rooms.length; i++) {
         console.log(rooms[i]);
     }
