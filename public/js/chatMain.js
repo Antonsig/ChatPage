@@ -77,13 +77,19 @@ function createChatroom() {
 
 function subsc() {
     client.subscribe(currentRoom, function(message) {
-        var str = '';
-            str += ' <span style="color: RED">';
+        var str = '<div class="mess">';
+            str += ' <span style="color: #';
+            str += color();
+            str += '">';
             str += message.userName;
             str += " say's </span>";
             str += message.text;
-            str += '</br>';
+            str += '</div>';
         $("#output").val('');
         $("#output").prepend(str);
     });
+}
+
+function color(){
+    var randomnumber=Math.floor(Math.random()*999);
 }
