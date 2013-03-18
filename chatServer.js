@@ -1,7 +1,8 @@
 var currentRooms = {
     room : [],
     ownerId : []
-}
+};
+
 var currentMessages = {
     userID : [],
     room : [],
@@ -24,8 +25,7 @@ var inExtension = {
                 message.ext = {};
             };
             message.ext = { 
-                value: "hola1",
-                rooms: currentRooms,
+                rooms: currentRooms.room,
                 messages: currentMessages
             };
             
@@ -40,12 +40,8 @@ var inExtension = {
             };
         //console.log("sendi2");    
         };
-        
-
         return callback(message);    
- 
     }
-
 };
 
 var app = express();
@@ -79,25 +75,19 @@ bayeux.bind('publish', function(clientId, channel, data) {
         console.log(currentRooms.room[i]);
         if (currentRooms.room[i] == channel) {
             found = true;
+            console.log("Herbergi fannst");
         }
     }        
-    if (found = false) {
+    if (found == false) {
         currentRooms.room.push(channel);
         currentRooms.ownerId.push(clientId);
         console.log("channel added to server");
     }
-
 });
 
 bayeux.bind('disconnect', function(clientId) {
   console.log("disconnect " + clientId);
 });
-
-// app.post('/chattid', function(req, res) {
-  // bayeux.getClient().publish('/chattid', {text: req.body.message});
-  // console.log("in app.post");
-  // res.send(200);
-// });
 
 bayeux.addExtension(inExtension);
 bayeux.listen(8001);

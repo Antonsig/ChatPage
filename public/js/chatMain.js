@@ -73,16 +73,6 @@ function createChatroom() {
     }
     $("#currentChat").html("You are currently in " + currentRoom);
     subsc();
-    // client.subscribe(currentRoom, function(message) {
-        // var str = '';
-            // str += ' <span style="color: RED">';
-            // str += message.userName;
-            // str += " say's </span>";
-            // str += message.text;
-            // str += '</br>';
-        // $("#output").val('');
-        // $("#output").prepend(str);
-    // });
 };
 
 function subsc() {
