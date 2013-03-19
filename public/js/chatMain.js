@@ -57,8 +57,6 @@ function logVar() {
 
 $(function(){
     $('#send').click(function(e) {
-    // syncServer();
-    // logVar();    
     message = document.getElementById("myText").value;
     var publication = client.publish(currentRoom, {userName: client.name, text: message, color: myColor});
 

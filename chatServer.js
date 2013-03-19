@@ -19,8 +19,6 @@ var bayeux = new Faye.NodeAdapter({
 
 setInterval(function(){sendData()},5000);
 
-
-
 var app = express();
 app.configure(function () {
     //app.use(express.bodyParser());
@@ -44,7 +42,7 @@ bayeux.bind('unsubscribed', function(clientId, channel) {
 });
 
 bayeux.bind('publish', function(clientId, channel, data) {
-  console.log("publish " + clientId +  " in channel " + channel + " with data " + data);
+  console.log("publish " + clientId +  " in channel " + channel + " with data " + data.text);
   console.log("currentRoomLength " + currentRooms.room.length)
   var found = false;
     for(var i = 0; i < currentRooms.room.length; i++) {
@@ -77,9 +75,10 @@ bayeux.bind('disconnect', function(clientId) {
 
 //bayeux.addExtension(inExtension);
 bayeux.listen(8001);
+console.log("Bayeux server listening on localhost:8001");
 //bayeux.attach(app);
 app.listen(8000);
-
+console.log("Http server listening on localhost:8000");
 
 /////////////////////Test/////////////
 var client = new Faye.Client('http://localhost:8001/faye');
