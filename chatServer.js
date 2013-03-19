@@ -17,37 +17,9 @@ var bayeux = new Faye.NodeAdapter({
     timeout: 45
 });
 
-var inExtension = {
-    outgoing: function(message, callback) {
-        // Let non-subscribe messages through
-        if (message.channel !== '/meta/subscribe') {
-            if (!message.ext) {
-                message.ext = {};
-            };
-            message.ext = { 
-                rooms : currentRooms.room,
-                roomOwner : currentRooms.ownerId,
-                messageData : currentMessages.data.text,
-                messageUserId : currentMessages.userId,
-                messageRoom : currentMessages.room
-            };
+setInterval(function(){sendData()},5000);
 
-            //console.log("sendi1");
-            return callback(message);             
-        };
-        if (!message.ext) {
-            message.ext = { 
-                rooms : currentRooms.room,
-                roomOwner : currentRooms.ownerId,
-                messageData : currentMessages.data,
-                messageUserId : currentMessages.userId,
-                messageRoom : currentMessages.room
-            };
-        //console.log("sendi2");    
-        };
-        return callback(message);    
-    }
-};
+
 
 var app = express();
 app.configure(function () {
@@ -72,7 +44,7 @@ bayeux.bind('unsubscribed', function(clientId, channel) {
 });
 
 bayeux.bind('publish', function(clientId, channel, data) {
-  console.log("publish " + clientId +  " in channel " + channel + " with data " + data.text);
+  console.log("publish " + clientId +  " in channel " + channel + " with data " + data);
   console.log("currentRoomLength " + currentRooms.room.length)
   var found = false;
     for(var i = 0; i < currentRooms.room.length; i++) {
@@ -84,13 +56,18 @@ bayeux.bind('publish', function(clientId, channel, data) {
         }
     }     
     if (found == false) {
-        currentRooms.room.push(channel);
-        currentRooms.ownerId.push(clientId);
-        console.log("channel added to server");
+        if(channel !== '/123datachannel321') {
+            currentRooms.room.push(channel);
+            currentRooms.ownerId.push(clientId);
+            console.log("channel added to server");
+        }
+
     }
-    currentMessages.userId.push(clientId);
-    currentMessages.room.push(channel);
-    currentMessages.data.push(data.text);
+    if(channel !== '/123datachannel321') {
+        currentMessages.userId.push(clientId);
+        currentMessages.room.push(channel);
+        currentMessages.data.push(data);
+    }
 
 });
 
@@ -98,7 +75,22 @@ bayeux.bind('disconnect', function(clientId) {
   console.log("disconnect " + clientId);
 });
 
-bayeux.addExtension(inExtension);
+//bayeux.addExtension(inExtension);
 bayeux.listen(8001);
 //bayeux.attach(app);
 app.listen(8000);
+
+
+/////////////////////Test/////////////
+var client = new Faye.Client('http://localhost:8001/faye');
+function sendData() {
+
+    var publication = client.publish('/123datachannel321', {
+        rooms : currentRooms.room,
+        roomOwner : currentRooms.ownerId,
+        messageData : currentMessages.data,
+        messageUserId : currentMessages.userId,
+        messageRoom : currentMessages.room
+    });
+}
+//////////////////////////////////////
