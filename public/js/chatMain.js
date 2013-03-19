@@ -69,8 +69,6 @@ $(function(){
 });
 
 
-
-
 if(client.name == 'anonymous') {
     $("#currentUser").append('Welcome anonymous <br/> Please choose a username' + 
         '<br/><input type="text" id="newUserName" placeholder="New User"></input>' + 
@@ -86,7 +84,7 @@ if(currentRoom == '/chattid') {
 function createUser() {
 
     client.name = document.getElementById("newUserName").value;
-    console.log(client.name);
+    //console.log(client.name);
     myColor=Math.floor(Math.random()*500);
     $("#currentUser").html('Welcome ' + client.name);
 
@@ -94,7 +92,7 @@ function createUser() {
 
 function createChatroom() {
     currentRoom = "/" + document.getElementById("chatRoomName").value;
-    console.log(currentRoom);
+    //console.log(currentRoom);
     rooms.name.push(currentRoom);
     rooms.owner.push(client.ID);
     for(var i = 0; i < rooms.length; i++) {
